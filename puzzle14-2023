@@ -1,0 +1,95 @@
+data = []
+
+with open("puz14.txt") as file:
+    for line in file:
+        line = line.strip()
+        current = [i for i in line]
+        data.append(current)
+
+
+def getRocks(data):
+    allPos = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            if data[i][j] == 'O':
+                allPos.append([i,j])
+
+    return(allPos)
+
+
+def rollN(data, getRocks):
+    for i in getRocks:
+        
+        
+        nRolled = True
+        tempXY = i
+        change= False
+        
+        while nRolled:
+            if tempXY[0] != 0:
+                if data[tempXY[0] -1][tempXY[1]] == ".":
+                    tempXY = [tempXY[0] -1, tempXY[1]]
+                    change = True
+                else:
+                    nRolled = False
+            else:
+                nRolled = False
+        if change:
+            data[tempXY[0]][tempXY[1]] = "O"
+            data[i[0]][i[1]] = "."
+
+    return data
+
+def rotateBoard(data):
+    newData = []
+    for i in range(len(data[0])):
+        line = [j[i] for j in data]
+        newData.append(list(reversed(line)))
+    return newData
+
+
+
+def cycle(data, getRock):
+
+    data = rollN(data,getRock)
+    for i in range(3):
+        data = rotateBoard(data)
+        data = rollN(data, getRocks(data))
+    
+    return(rotateBoard(data))
+    
+
+
+def addEm(getRocks):
+    total = 0
+    for i in getRocks:
+        total += len(data) - i[0]
+    return(total)
+
+
+for j in data:
+    print(j)
+print("\n")
+
+DataList = [data]
+dataIndex = -1
+for i in range(1000000000):
+    print(i)
+    data = cycle(data,getRocks(data))
+    if data in DataList:
+        dataIndex = DataList.index(data)
+        break
+    DataList.append(data)
+
+if dataIndex != -1:
+    loop = (len(DataList)) - dataIndex
+    numberOfIte = 1000000000 - (len(DataList))
+
+    for i in range(numberOfIte%loop):
+        data = cycle(data,getRocks(data))
+
+
+for j in data:
+    print(j)
+       
+print(addEm(getRocks(data)))
